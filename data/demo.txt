@@ -1,0 +1,13 @@
+##VERTEX - LISTA DE VERTICES
+#id;posX;posY;elev;desc
+1;10.0;20.0;10.0;PV
+2;15.0;32.5;12.0;PV
+3;52.4;30.0;9.0;PV
+4;49.2;19.0;8.0;PV
+##EDGE - LISTA DE ARESTRAS
+#id;vertIni;vertFim
+1;1;2
+2;2;3
+3;3;1
+4;3;4
+5;4;1

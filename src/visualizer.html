@@ -118,7 +118,6 @@
         </div>
         <div id="mid">
             <canvas id="model"></canvas>
-            <pre id="output"></pre>
         </div>
         <div id="bottonbar">
             <button id="btnCaptureImg" type="button" class="myBtn" style="margin-left:7px" onclick="btnCaptureImgOnClick();">
@@ -135,6 +134,8 @@
 
         let progressWidth;
         let progressId;
+        let graph;
+        let flotProp = ['posX', 'posY', 'elev'];
 
         window.addEventListener('load', function() {
             progressAnimate();
@@ -165,25 +166,113 @@
             }
         }
 
-        function DrawModel(graph) {
-            alert(graph.length);
+        function scaleToFit(graph, canvas) {
+            let modelWidth = canvas.width;
+            let modelHeight = canvas.height;
+            let minPosX = Number.MAX_VALUE;
+            let minPosY = Number.MAX_VALUE;
+            let maxPosX = Number.MIN_VALUE;
+            let maxPosY = Number.MIN_VALUE;
+            graph.vertices.forEach(vertex => {
+                vertex.posX = parseFloat(vertex.posX);
+                vertex.posY = parseFloat(vertex.posY);
+                if(vertex.posX < minPosX) minPosX = vertex.posX;
+                if(vertex.posX > maxPosX) maxPosX = vertex.posX;
+                if(vertex.posY < minPosY) minPosY = vertex.posY;
+                if(vertex.posY > maxPosY) maxPosY = vertex.posY;
+            })
+            let graphWidth = maxPosX - minPosX;
+            let graphHeight = maxPosY - minPosY;
+            let scaleFat = Math.min(modelWidth / graphWidth, modelHeight / graphHeight);
+            scaleFat = scaleFat * 0.9;
+            alert(scaleFat)
+            // scaleFat = 5.0
+            let graphWidthHalf = graphWidth / 2.0;
+            let graphHeightHalf = graphHeight / 2.0;
+            let modelWidthHalf = modelWidth / 2;
+            let modelHeightHalf = modelHeight / 2;
+            graph.vertices.forEach(vertex => {
+                let dx = graphWidthHalf - vertex.posX;
+                let dy = graphHeightHalf - vertex.posY;
+                vertex.posX = modelWidthHalf - (dx + minPosX) * scaleFat;
+                vertex.posY = modelHeightHalf + (dy + minPosY) *scaleFat;
+            })
+        }
+
+        function drawVertex(vertex, ctx) {
+            ctx.beginPath();
+            ctx.arc(vertex.posX, vertex.posY, 20, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function DrawModel() {
             progressAnimate();
             let canvas = document.getElementById("model");
+            alert(canvas.scrollHeight + ' | ' + canvas.scrollWidth)
+            canvas.height = canvas.scrollHeight;
+            canvas.width = canvas.scrollWidth;
+            // canvas.height = 900;
+            // canvas.width = 900;
             let ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#FF0000";
-            ctx.fillRect(0, 0, 150, 75);
+            scaleToFit(graph, canvas);
+            graph.vertices.forEach(vertex => {
+                drawVertex(vertex, ctx);
+            })
+        }
+
+        function lineToObject(titleLine, line){
+            if(titleLine.startsWith ('##')) return;
+            if(titleLine.startsWith('#')){
+                let arrProp = titleLine.substring(1).split(';');
+                let arrVal = line.split(';');
+                if(arrProp.length == arrVal.length){
+                    let obj = new Object();
+                    for(i = 0; i < arrProp.length; i++){
+                        let prop = arrProp[i];
+                        let val = arrVal[i];
+                        if(flotProp.includes(val)) val = parseFloat(val);
+                        obj[prop] = val;
+                    }
+                    return obj;
+                }
+            }
+            return;
         }
 
         function textToGraph(text) {
             let textAr = text.split('\n');
-            return textAr;
+            let graph = {vertices: [], edges: []};
+            let typeVertexStr = '##VERTEX';
+            let typeEdgeStr = '##EDGE';
+            let type = '';
+            let titleLine = '';
+            textAr.forEach(element => {
+                if(element.startsWith ('##')) {
+                    if(element.startsWith(typeVertexStr)) type = typeVertexStr;
+                    if(element.startsWith(typeEdgeStr)) type = typeEdgeStr;
+                    return;
+                }
+                if(element.startsWith('#')) {
+                    titleLine = element;
+                    return;
+                }
+                if(titleLine != '') {
+                    let obj = lineToObject(titleLine, element);
+                    if(type === typeVertexStr) graph.vertices.push(obj);
+                    if(type === typeEdgeStr) graph.edges.push(obj);
+                }
+            });
+            return graph;
         }
 
         async function textFileInputOnChange(event) {
             const file = event.target.files.item(0);
             if(file){
                 let fileText = await file.text();
-                DrawModel(textToGraph(fileText));
+                graph = textToGraph(fileText);
+                DrawModel();
             }
         }
 
