@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualizador de Grafos Para Rede de Esgoto</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --topHeight: 7px; /*7*/
+            --bottonHeight: 45px; /*40*/
+            --cadGray: #3B4453;
+        }
+
+        .myBtn {
+            background-color: var(--cadGray);
+            border: 1px solid black;
+            border-radius: 3px;
+            color: white;
+            padding: 6px 8px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 7px 0px 8px 4px;
+            min-width: 80px;
+            vertical-align: top;
+            height: calc(100% - 15px);
+        }
+
+        .myBtn:hover {
+            background-color: #272F3A;
+            transition: 0.4s;
+            border: 1px solid darkblue;
+        }
+
+        .myBtn:active {
+            background-color: #222933;
+            transition: 0.4s;
+            border: 1px solid darkblue;
+        }
+
+        .space {
+            width: 15px;
+            height: auto;
+            display: inline-block;
+        }
+
+        .material-icons.my {
+            font-size: 14px;
+            vertical-align: bottom;
+        }
+
+        #parent {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #topbar {
+            height: var(--topHeight);
+            background-color: lightgray;
+            width: 100%;
+        }
+        /*this is the div that represents the progress bar when capturing images in mosaic mode
+        the width% is the same as the progress%, start with 100%
+        */
+        #progress {
+            height: 7px;
+            width: 100%;
+            background-color: green;
+        }
+
+        #mid {
+            height: calc(100% - var(--topHeight) - var(--bottonHeight));
+            min-height: 300px;
+            width: 100%;
+        }
+
+        #model {
+            height: calc(100% - 2px);
+            width: calc(100% - 2px);
+            border:1px solid #000000;
+        }
+
+        #bottonbar {
+            height: var(--bottonHeight);
+            width: 100%;
+            margin-top: auto;
+            background: var(--cadGray);
+        }
+
+        #textFileInput {
+            background-color: var(--cadGray);
+            border: 1px solid black;
+            border-radius: 3px;
+            color: white;
+            padding: 6px 8px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 5px 0px 5px 4px;
+            vertical-align: top;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="parent">
+        <div id="topbar">
+            <div id="progress"></div>
+        </div>
+        <div id="mid">
+            <canvas id="model"></canvas>
+            <pre id="output"></pre>
+        </div>
+        <div id="bottonbar">
+            <button id="btnCaptureImg" type="button" class="myBtn" style="margin-left:7px" onclick="btnCaptureImgOnClick();">
+                <span class="material-icons my">&#xe894;</span>
+                <span id="btnDatumTxt">Salvar Imagem</span>
+            </button>
+            <div class="space"></div>
+            <input id="textFileInput" type="file" name="texto" accept="texto/txt" onchange="textFileInputOnChange(event);">
+            <div class="space"></div>
+            <button id="btnClose" type="button" class="myBtn" style="float:right;margin-right:7px" onclick="btnCloseOnClick();">Fechar</button>
+        </div>
+    </div>
+    <script>
+
+        let progressWidth;
+        let progressId;
+
+        window.addEventListener('load', function() {
+            progressAnimate();
+            // DrawModel();
+        })
+
+        function progressStart() {
+            var elem = document.getElementById("progress");
+            elem.style.width = "1%";
+        }
+
+        function progressEnd() {
+            clearInterval(progressId);
+            progressWidth = 100;
+            document.getElementById("progress").style.width = progressWidth + "%";
+        }
+
+        function progressAnimate() {
+            progressWidth = 1;
+            progressId = setInterval(frame, 10);
+            function frame() {
+                if (progressWidth >= 100) {
+                    progressEnd();
+                } else {
+                    progressWidth++;
+                    document.getElementById("progress").style.width = progressWidth + "%";
+                }
+            }
+        }
+
+        function DrawModel(graph) {
+            alert(graph.length);
+            progressAnimate();
+            let canvas = document.getElementById("model");
+            let ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#FF0000";
+            ctx.fillRect(0, 0, 150, 75);
+        }
+
+        function textToGraph(text) {
+            let textAr = text.split('\n');
+            return textAr;
+        }
+
+        async function textFileInputOnChange(event) {
+            const file = event.target.files.item(0);
+            if(file){
+                let fileText = await file.text();
+                DrawModel(textToGraph(fileText));
+            }
+        }
+
+        function btnCaptureImgOnClick() {
+            alert("não implementado!");
+        }
+
+        function btnCloseOnClick() {
+            window.close();
+        }
+    </script>
+</body>
+</html>
