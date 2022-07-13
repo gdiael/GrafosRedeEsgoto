@@ -134,13 +134,15 @@
 
         let progressWidth;
         let progressId;
-        let graph;
+        let graph = {vertices: [], edges: []};
         let flotProp = ['posX', 'posY', 'elev'];
+        let textSize = 13;
 
         window.addEventListener('load', function() {
             progressAnimate();
-            // DrawModel();
         })
+
+        function vertexRad() { return 1.5 * textSize; }
 
         function progressStart() {
             var elem = document.getElementById("progress");
@@ -174,8 +176,6 @@
             let maxPosX = Number.MIN_VALUE;
             let maxPosY = Number.MIN_VALUE;
             graph.vertices.forEach(vertex => {
-                vertex.posX = parseFloat(vertex.posX);
-                vertex.posY = parseFloat(vertex.posY);
                 if(vertex.posX < minPosX) minPosX = vertex.posX;
                 if(vertex.posX > maxPosX) maxPosX = vertex.posX;
                 if(vertex.posY < minPosY) minPosY = vertex.posY;
@@ -185,8 +185,6 @@
             let graphHeight = maxPosY - minPosY;
             let scaleFat = Math.min(modelWidth / graphWidth, modelHeight / graphHeight);
             scaleFat = scaleFat * 0.9;
-            alert(scaleFat)
-            // scaleFat = 5.0
             let graphWidthHalf = graphWidth / 2.0;
             let graphHeightHalf = graphHeight / 2.0;
             let modelWidthHalf = modelWidth / 2;
@@ -201,38 +199,56 @@
 
         function drawVertex(vertex, ctx) {
             ctx.beginPath();
-            ctx.arc(vertex.posX, vertex.posY, 20, 0, 2 * Math.PI);
+            ctx.arc(vertex.posX, vertex.posY, vertexRad(), 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.font = textSize + "px Arial";
+            ctx.fillStyle = "red";
+            ctx.textAlign = "center";
+            ctx.fillText(vertex.id, vertex.posX, vertex.posY + textSize/2);
+        }
+
+        function getVertex(id) {
+            return graph.vertices.find(vertex => {
+                return vertex.id === id;
+            });
+        }
+
+        function drawEdges(edge, ctx) {
+            let vertexIni = getVertex(edge.vertIni);
+            let vertexFim = getVertex(edge.vertFim);
+            ctx.moveTo(vertexIni.posX, vertexIni.posY);
+            ctx.lineTo(vertexFim.posX, vertexFim.posY);
             ctx.stroke();
         }
 
-        function DrawModel() {
+        function drawModel() {
             progressAnimate();
             let canvas = document.getElementById("model");
-            alert(canvas.scrollHeight + ' | ' + canvas.scrollWidth)
             canvas.height = canvas.scrollHeight;
             canvas.width = canvas.scrollWidth;
-            // canvas.height = 900;
-            // canvas.width = 900;
             let ctx = canvas.getContext("2d");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#FF0000";
             scaleToFit(graph, canvas);
             graph.vertices.forEach(vertex => {
                 drawVertex(vertex, ctx);
-            })
+            });
+            graph.edges.forEach(edge => {
+                drawEdges(edge, ctx);
+            });
         }
 
-        function lineToObject(titleLine, line){
+        function lineToObject(titleLine, line) {
             if(titleLine.startsWith ('##')) return;
             if(titleLine.startsWith('#')){
                 let arrProp = titleLine.substring(1).split(';');
                 let arrVal = line.split(';');
                 if(arrProp.length == arrVal.length){
                     let obj = new Object();
-                    for(i = 0; i < arrProp.length; i++){
+                    for(i = 0; i < arrProp.length; i++) {
                         let prop = arrProp[i];
                         let val = arrVal[i];
-                        if(flotProp.includes(val)) val = parseFloat(val);
+                        if(flotProp.includes(prop)) val = parseFloat(val);
                         obj[prop] = val;
                     }
                     return obj;
@@ -243,7 +259,6 @@
 
         function textToGraph(text) {
             let textAr = text.split('\n');
-            let graph = {vertices: [], edges: []};
             let typeVertexStr = '##VERTEX';
             let typeEdgeStr = '##EDGE';
             let type = '';
@@ -264,15 +279,14 @@
                     if(type === typeEdgeStr) graph.edges.push(obj);
                 }
             });
-            return graph;
         }
 
         async function textFileInputOnChange(event) {
             const file = event.target.files.item(0);
             if(file){
                 let fileText = await file.text();
-                graph = textToGraph(fileText);
-                DrawModel();
+                textToGraph(fileText);
+                drawModel();
             }
         }
 
