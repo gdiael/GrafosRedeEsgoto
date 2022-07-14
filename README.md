@@ -1,4 +1,4 @@
-# Grafos - Rede Esgoto
+# Grafos - Rede de Esgoto
 Implementação de Grafos para Representação de Rede de Esgotos
 
 ## Como rodar?
@@ -11,7 +11,7 @@ Foi instalado o Java 17, usando o comando winget no powershell
 ~~~
 winget install -e --id Oracle.JDK.17
 ~~~
-E o Html foi testado na versão 103 do Google Chrome e na versão 103 do Microsoft Edge.
+O Html foi testado na versão 103 do Google Chrome e na versão 103 do Microsoft Edge.
 
 Para compilar e rodar basta executar os seguintes comandos no terminal
 ~~~
@@ -22,7 +22,7 @@ Para rodar foi utilizado o utilitário makefile, a versão para windows está di
 ~~~
 https://sourceforge.net/projects/mingw/
 ~~~
-Após a seguir todos os passo corretamente da instalação e configuração é possível usar o comando make no windows.
+Após a seguir todos os passos corretamente da instalação e configuração é possível usar o comando make no windows normalmente.
 ~~~javascript
 // para compilar e executar
 make runwin
