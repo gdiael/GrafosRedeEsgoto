@@ -15,7 +15,7 @@ E o Html foi testado na versão 103 do Google Chrome e na versão 103 do Microso
 
 Para compilar e rodar basta executar os seguintes comandos no terminal
 ~~~
-javac -d ./bin ./src/Main.java
+javac -d ./bin ./src/Main.java ./src/Vertex.java ./src/Edge.java ./src/Graph.java
 java -cp bin Main
 ~~~
 Para rodar foi utilizado o utilitário makefile, a versão para windows está disponível no utilitário MinGW:

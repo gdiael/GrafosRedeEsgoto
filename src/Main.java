@@ -9,6 +9,7 @@ public class Main {
 
             System.out.println("");
             System.out.println("Iniciando Grafo para Redes de Esgoto.");
+            System.out.println("");
             System.out.println("Digite o nome de um dos arquivos de grafo disponiveis na pasta 'data' [ou Enter para demo]:");
             
             String fileName = "demo";
@@ -26,13 +27,11 @@ public class Main {
             Path filePath = Path.of(fileName);
             try {
                 String content = Files.readString(filePath, StandardCharsets.UTF_8);
-                System.out.println(content);
+                Graph graph = Graph.parseGraph(content);
+                System.out.println(graph);
             } catch (Exception e) {
-                System.out.println("Erro ao ler o arquivo: " + fileName);
+                System.out.println("Erro ao ler o arquivo: " + fileName + "\n" + e.toString());
             }
-
         }
-        
-        
     }
 }
