@@ -1,6 +1,7 @@
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class Vertex {
@@ -22,12 +23,21 @@ public class Vertex {
 
     public Boolean wasVisited = false;
 
+    private static String[] doublePropName = {"posX", "posY", "elev"};
+
     public Vertex(){
-        edges = new ArrayList<Edge>();
+        edges = new ArrayList<>();
     }
 
-    public ArrayList<Edge> getAdjacentEdges(){
+    public List<Edge> getAdjacentEdges(){
         return edges;
+    }
+
+    private static boolean isDblPropertyName(String prop) {
+        for (String dblProp : doublePropName) {
+            if(prop.equals(dblProp)) return true;
+        }
+        return false;
     }
 
     public Boolean conect(Edge edge) {
@@ -55,7 +65,7 @@ public class Vertex {
                     String prop = arrProp[i];
                     String val = arrVal[i];
                     Double valDbl = 0.0;
-                    if(prop.equals("posX") || prop.equals("posY") || prop.equals("elev")){
+                    if(isDblPropertyName(prop)){
                         try {
                             NumberFormat format = NumberFormat.getInstance(Locale.US);
                             Number number = format.parse(val);
@@ -67,19 +77,25 @@ public class Vertex {
                     switch(prop){
                         case "id":
                             id = val;
+                            break;
                         case "posX":
                             posX = valDbl;
+                            break;
                         case "posY":
                             posY = valDbl;
+                            break;
                         case "elev":
                             elev = valDbl;
+                            break;
                         case "desc":
                             desc = val;
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
         }
-        return;
     }
 
     // distância entre dois vertices

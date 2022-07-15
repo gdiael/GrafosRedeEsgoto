@@ -14,10 +14,19 @@ public class Edge {
 
     public Boolean wasVisited = false;
 
+    private static String[] doublePropName = {"profIni", "profFim", "dia", "vazao", "flow"};
+
     public Vertex getOpositVertex(Vertex vert){
         if(vert == vertexIni) return vertexFim;
         if(vert == vertexFim) return vertexIni;
         return null;
+    }
+
+    private static boolean isDblPropertyName(String prop) {
+        for (String dblProp : doublePropName) {
+            if(prop.equals(dblProp)) return true;
+        }
+        return false;
     }
 
     public void populate(String titleLine, String line) {
@@ -30,31 +39,32 @@ public class Edge {
                     String prop = arrProp[i];
                     String val = arrVal[i];
                     Double valDbl = 0.0;
-                    if(prop == "profIni" || prop == "profFim" || prop == "dia" || prop == "vazao" || prop == "flow"){
+                    if(isDblPropertyName(prop)){
                         valDbl = Double.parseDouble(val);
                     }
                     switch(prop){
                         case "id":
-                            id = val;
+                            id = val; break;
                         case "vertIni":
-                            vertIdIni = val;
+                            vertIdIni = val; break;
                         case "vertFim":
-                            vertIdFim = val;
+                            vertIdFim = val; break;
                         case "profIni":
-                            profIni = valDbl;
+                            profIni = valDbl; break;
                         case "profFim":
-                            profFim = valDbl;
+                            profFim = valDbl; break;
                         case "dia":
-                            dia = valDbl;
+                            dia = valDbl; break;
                         case "vazao":
-                            vazao = valDbl;
+                            vazao = valDbl; break;
                         case "flow":
-                            flow = valDbl;
+                            flow = valDbl; break;
+                        default:
+                        break;
                     }
                 }
             }
         }
-        return;
     }
 
     public String toString() {
