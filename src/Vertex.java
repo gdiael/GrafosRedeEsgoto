@@ -1,8 +1,5 @@
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class Vertex {
 
@@ -62,18 +59,11 @@ public class Vertex {
             String[] arrVal = line.split(";");
             if(arrProp.length == arrVal.length){
                 for(Integer i = 0; i < arrProp.length; i++) {
+
                     String prop = arrProp[i];
                     String val = arrVal[i];
-                    Double valDbl = 0.0;
-                    if(isDblPropertyName(prop)){
-                        try {
-                            NumberFormat format = NumberFormat.getInstance(Locale.US);
-                            Number number = format.parse(val);
-                            valDbl = number.doubleValue();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    Double valDbl = (isDblPropertyName(prop) ? MyUtil.parseDbl(val) : 0.0);
+                    
                     switch(prop){
                         case "id":
                             id = val;

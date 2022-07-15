@@ -15,7 +15,7 @@ O Html foi testado na versão 103 do Google Chrome e na versão 103 do Microsoft
 
 Para compilar e rodar basta executar os seguintes comandos no terminal
 ~~~
-javac -d ./bin ./src/Main.java ./src/Vertex.java ./src/Edge.java ./src/Graph.java
+javac -d ./bin ./src/Main.java ./src/MyUtil.java ./src/Vertex.java ./src/Edge.java ./src/Graph.java
 java -cp bin Main
 ~~~
 Também é possível rodar utilizando o makefile, a versão para windows está disponível no utilitário MinGW:

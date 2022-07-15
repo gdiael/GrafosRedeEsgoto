@@ -38,10 +38,7 @@ public class Edge {
                 for(Integer i = 0; i < arrProp.length; i++) {
                     String prop = arrProp[i];
                     String val = arrVal[i];
-                    Double valDbl = 0.0;
-                    if(isDblPropertyName(prop)){
-                        valDbl = Double.parseDouble(val);
-                    }
+                    Double valDbl = (isDblPropertyName(prop) ? MyUtil.parseDbl(val) : 0.0);
                     switch(prop){
                         case "id":
                             id = val; break;

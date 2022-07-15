@@ -26,7 +26,7 @@ all: mkdirs $(PROG)
 mkdirs:
 	mkdir -p $(BIN)
 
-$(PROG): $(SRC)/Main.java $(SRC)/Vertex.java $(SRC)/Edge.java $(SRC)/Graph.java
+$(PROG): $(SRC)/Main.java $(SRC)/MyUtil.java $(SRC)/Vertex.java $(SRC)/Edge.java $(SRC)/Graph.java
 	$(CC) $(FLAGS) $^
 
 clean: 
