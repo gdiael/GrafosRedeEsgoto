@@ -13,15 +13,16 @@ public class Graph {
         edges = new ArrayList<Edge>();
     }
 
-    public void addVertex(Vertex newVert) {
+    public Boolean addVertex(Vertex newVert) {
         for (Vertex vert : vertices) {
             // se a distância entre os vertices for menos que 1mm, consideramos sobrepostos
             if(newVert.distance(vert) < 0.001){
                 // não adiciona
-                return;
+                return false;
             }
         }
         vertices.add(newVert);
+        return true;
     }
 
     // retorna o vertice com identificador id, caso não exista retorna null
@@ -32,6 +33,20 @@ public class Graph {
             }
         }
         return null;
+    }
+
+    public Boolean addEdge(Edge edge){
+        Integer counter = 0;
+        for (Vertex vert : vertices) {
+            if(vert.conect(edge)){
+                counter++;
+            }
+        }
+        if(counter == 2){
+            this.edges.add(edge);
+            return true;
+        }
+        return false;
     }
 
     public static Graph parseGraph(String text) {
@@ -60,7 +75,7 @@ public class Graph {
                 if(type == typeEdgeStr) {
                     Edge edge = new Edge();
                     edge.populate(titleLine, element);
-                    if(!edge.id.isEmpty()) graph.edges.add(edge);
+                    if(!edge.id.isEmpty()) graph.addEdge(edge);
                 }
             }
         }

@@ -5,24 +5,40 @@ import java.util.Locale;
 
 public class Vertex {
 
+    // identificador unico de cada vertice
     public String id = "";
 
+    // coordenada X do vertice
     public Double posX = 0.0;
+    // coordenada Y do vertice
     public Double posY = 0.0;
-
+    // coordenada Z do vertice, também chamada de elevação ou cota
     public Double elev = 0.0;
+    // descrição do vertice
     public String desc = "";
 
+    // lista de arestas que se conectam no vertice
     private ArrayList<Edge> edges;
 
     public Vertex(){
         edges = new ArrayList<Edge>();
     }
 
-    public void conect(Edge edge) {
-        // precisa de mais verificações
-        edges.add(edge);
+
+    public Boolean conect(Edge edge) {
+        if(this.id.equals(edge.vertIdIni)){
+            edges.add(edge);
+            edge.vertexIni = this;
+            return true;
+        }
+        if(this.id.equals(edge.vertIdFim)){
+            edges.add(edge);
+            edge.vertexFim = this;
+            return true;
+        }
+        return false;
     }
+
 
     public void populate(String titleLine, String line) {
         if(titleLine.startsWith("##")) return;

@@ -18,11 +18,11 @@ Para compilar e rodar basta executar os seguintes comandos no terminal
 javac -d ./bin ./src/Main.java ./src/Vertex.java ./src/Edge.java ./src/Graph.java
 java -cp bin Main
 ~~~
-Para rodar foi utilizado o utilitário makefile, a versão para windows está disponível no utilitário MinGW:
+Também é possível rodar utilizando o makefile, a versão para windows está disponível no utilitário MinGW:
 ~~~
 https://sourceforge.net/projects/mingw/
 ~~~
-Após a seguir todos os passos corretamente da instalação e configuração é possível usar o comando make no windows normalmente.
+Após a seguir todos os passos corretamente da instalação e configuração, é possível usar o comando make no windows normalmente.
 ~~~javascript
 // para compilar e executar
 make runwin

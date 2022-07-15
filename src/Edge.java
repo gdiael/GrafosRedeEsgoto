@@ -1,13 +1,16 @@
 public class Edge {
     
     public String id = "";
-    public String vertIni = "";
-    public String vertFim = "";
+    public String vertIdIni = "";
+    public String vertIdFim = "";
     public Double profIni = 0.8; // profundidade em vertIni
     public Double profFim = 0.8; // profundidade em vertFim
     public Double dia = 150.0; // diâmetro em milimetros
-    public double vazao = 1.5; // vazão de cada trecho em L/s
-    public double flow = 1.0; // direção do fluxo (positivo = ini -> fim, negativo = fim -> ini)
+    public Double vazao = 1.5; // vazão de cada trecho em L/s
+    public Double flow = 1.0; // direção do fluxo (positivo = ini -> fim, negativo = fim -> ini)
+
+    public Vertex vertexIni;
+    public Vertex vertexFim;
 
     public void populate(String titleLine, String line) {
         if(titleLine.startsWith("##")) return;
@@ -26,9 +29,9 @@ public class Edge {
                         case "id":
                             id = val;
                         case "vertIni":
-                            vertIni = val;
+                            vertIdIni = val;
                         case "vertFim":
-                            vertFim = val;
+                            vertIdFim = val;
                         case "profIni":
                             profIni = valDbl;
                         case "profFim":
@@ -47,6 +50,6 @@ public class Edge {
     }
 
     public String toString() {
-        return String.format("%s;%s;%s;%.3f;%.3f;%.1f;%.3f;%.1f;", id, vertIni, vertFim, profIni, profFim, dia, vazao, flow);
+        return String.format("%s;%s;%s;%.3f;%.3f;%.1f;%.3f;%.1f;", id, vertIdIni, vertIdFim, profIni, profFim, dia, vazao, flow);
     }
 }
