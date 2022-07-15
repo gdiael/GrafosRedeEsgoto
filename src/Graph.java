@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Graph {
 
@@ -47,6 +48,46 @@ public class Graph {
             return true;
         }
         return false;
+    }
+
+    public void depthSearch() {
+        for (Vertex vert : vertices) {
+            vert.wasVisited = false;
+        }
+        for (Edge edge : edges) {
+            edge.wasVisited = false;
+        }
+        Stack<Vertex> stackVertices = new Stack<Vertex>();
+        Vertex vert = vertices.get(0);
+        stackVertices.push(vert);
+        Boolean executing = true;
+        while(executing) {
+            if(!vert.wasVisited){
+                vert.wasVisited = true;
+                System.out.println(vert);
+            }
+            Boolean vertEnded = true;
+            for (Edge edge : vert.getAdjacentEdges()) {
+                if(!edge.wasVisited){
+                    edge.wasVisited = true;
+                    System.out.println(edge);
+                    Vertex oposit = edge.getOpositVertex(vert);
+                    if(!oposit.wasVisited){
+                        vert = oposit;
+                        stackVertices.push(vert);
+                        vertEnded = false;
+                        break;
+                    }
+                }
+            }
+            if(vertEnded) {
+                if(stackVertices.size() > 0){
+                    vert = stackVertices.pop();
+                } else {
+                    executing = false;
+                }
+            }
+        }
     }
 
     public static Graph parseGraph(String text) {

@@ -20,10 +20,15 @@ public class Vertex {
     // lista de arestas que se conectam no vertice
     private ArrayList<Edge> edges;
 
+    public Boolean wasVisited = false;
+
     public Vertex(){
         edges = new ArrayList<Edge>();
     }
 
+    public ArrayList<Edge> getAdjacentEdges(){
+        return edges;
+    }
 
     public Boolean conect(Edge edge) {
         if(this.id.equals(edge.vertIdIni)){

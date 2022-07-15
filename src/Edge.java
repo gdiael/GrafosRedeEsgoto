@@ -12,6 +12,14 @@ public class Edge {
     public Vertex vertexIni;
     public Vertex vertexFim;
 
+    public Boolean wasVisited = false;
+
+    public Vertex getOpositVertex(Vertex vert){
+        if(vert == vertexIni) return vertexFim;
+        if(vert == vertexFim) return vertexIni;
+        return null;
+    }
+
     public void populate(String titleLine, String line) {
         if(titleLine.startsWith("##")) return;
         if(titleLine.startsWith("#")){

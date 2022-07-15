@@ -28,7 +28,7 @@ public class Main {
             try {
                 String content = Files.readString(filePath, StandardCharsets.UTF_8);
                 Graph graph = Graph.parseGraph(content);
-                System.out.println(graph);
+                graph.depthSearch();
             } catch (Exception e) {
                 System.out.println("Erro ao ler o arquivo: " + fileName + "\n" + e.toString());
             }
