@@ -65,33 +65,19 @@ public class Graph {
     public void depthSearch() {
         clearVisited();
         Deque<Vertex> stackVertices = new ArrayDeque<>();
-        Vertex vert = vertices.get(0);
-        stackVertices.push(vert);
-        boolean executing = true;
-        while(executing) {
-            if(!vert.wasVisited){
-                vert.wasVisited = true;
-                System.out.println(vert);
-            }
-            boolean vertEnded = true;
+        stackVertices.push(vertices.get(0));
+        while(!stackVertices.isEmpty()) {
+            Vertex vert = stackVertices.pop();
+            vert.wasVisited = true;
+            System.out.println(vert);
             for (Edge edge : vert.getAdjacentEdges()) {
                 if(!edge.wasVisited){
                     edge.wasVisited = true;
                     System.out.println(edge);
-                    Vertex oposit = edge.getOpositVertex(vert);
-                    if(!oposit.wasVisited){
-                        vert = oposit;
-                        stackVertices.push(vert);
-                        vertEnded = false;
-                        break;
-                    }
                 }
-            }
-            if(vertEnded) {
-                if(!stackVertices.isEmpty()){
-                    vert = stackVertices.pop();
-                } else {
-                    executing = false;
+                Vertex oposit = edge.getOpositVertex(vert);
+                if(!oposit.wasVisited){
+                    stackVertices.push(oposit);
                 }
             }
         }
