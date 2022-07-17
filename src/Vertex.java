@@ -18,7 +18,7 @@ public class Vertex {
     // lista de arestas que se conectam no vertice
     private ArrayList<Edge> edges;
 
-    public Boolean wasVisited = false;
+    public boolean wasVisited = false;
 
     private static String[] doublePropName = {"posX", "posY", "elev"};
 
@@ -37,7 +37,7 @@ public class Vertex {
         return false;
     }
 
-    public Boolean conect(Edge edge) {
+    public boolean conect(Edge edge) {
         if(this.id.equals(edge.vertIdIni)){
             edges.add(edge);
             edge.vertexIni = this;

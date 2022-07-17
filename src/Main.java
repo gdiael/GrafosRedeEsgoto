@@ -12,8 +12,8 @@ public class Main {
         
         try (Scanner scanner = new Scanner(System.in)) {
 
-            logger.log(Level.INFO, "\nIniciando Grafo para Redes de Esgoto.");
-            logger.log(Level.INFO, "\nDigite o nome de um dos arquivos de grafo disponiveis na pasta 'data' [ou Enter para demo]:");
+            System.out.println("\nIniciando Grafo para Redes de Esgoto.");
+            System.out.println("\nDigite o nome de um dos arquivos de grafo disponiveis na pasta 'data' [ou Enter para demo]:");
             
             String fileName = "demo";
             
@@ -33,7 +33,7 @@ public class Main {
                 Graph graph = Graph.parseGraph(content);
                 graph.depthSearch();
             } catch (Exception e) {
-                logger.log(Level.SEVERE, String.format("Erro ao ler o arquivo: %s", fileName), e);
+                logger.log(Level.SEVERE, String.format("Erro ao ler o arquivo: %s%n%s", fileName, e.toString()), e);
             }
         }
     }

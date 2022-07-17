@@ -12,7 +12,7 @@ public class Edge {
     public Vertex vertexIni;
     public Vertex vertexFim;
 
-    public Boolean wasVisited = false;
+    public boolean wasVisited = false;
 
     private static String[] doublePropName = {"profIni", "profFim", "dia", "vazao", "flow"};
 

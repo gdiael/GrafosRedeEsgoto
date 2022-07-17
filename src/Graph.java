@@ -1,5 +1,6 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.Deque;
 
 public class Graph {
 
@@ -9,12 +10,13 @@ public class Graph {
 
     public Graph() {
         // inicia a lista de vertices
-        vertices = new ArrayList<Vertex>();
+        vertices = new ArrayList<>();
         // inicia a lista de arestas
-        edges = new ArrayList<Edge>();
+        edges = new ArrayList<>();
     }
 
-    public Boolean addVertex(Vertex newVert) {
+    public boolean addVertex(Vertex newVert) {
+        if(newVert.id.isEmpty()) return false;
         for (Vertex vert : vertices) {
             // se a distância entre os vertices for menos que 1mm, consideramos sobrepostos
             if(newVert.distance(vert) < 0.001){
@@ -29,14 +31,15 @@ public class Graph {
     // retorna o vertice com identificador id, caso não exista retorna null
     public Vertex getVertex(String id) {
         for (Vertex vert : vertices) {
-            if(vert.id == id){
+            if(vert.id.equals(id)){
                 return vert;
             }
         }
         return null;
     }
 
-    public Boolean addEdge(Edge edge){
+    public boolean addEdge(Edge edge){
+        if(edge.id.isEmpty()) return false;
         Integer counter = 0;
         for (Vertex vert : vertices) {
             if(vert.conect(edge)){
@@ -50,23 +53,27 @@ public class Graph {
         return false;
     }
 
-    public void depthSearch() {
+    private void clearVisited(){
         for (Vertex vert : vertices) {
             vert.wasVisited = false;
         }
         for (Edge edge : edges) {
             edge.wasVisited = false;
         }
-        Stack<Vertex> stackVertices = new Stack<Vertex>();
+    }
+
+    public void depthSearch() {
+        clearVisited();
+        Deque<Vertex> stackVertices = new ArrayDeque<>();
         Vertex vert = vertices.get(0);
         stackVertices.push(vert);
-        Boolean executing = true;
+        boolean executing = true;
         while(executing) {
             if(!vert.wasVisited){
                 vert.wasVisited = true;
                 System.out.println(vert);
             }
-            Boolean vertEnded = true;
+            boolean vertEnded = true;
             for (Edge edge : vert.getAdjacentEdges()) {
                 if(!edge.wasVisited){
                     edge.wasVisited = true;
@@ -81,7 +88,7 @@ public class Graph {
                 }
             }
             if(vertEnded) {
-                if(stackVertices.size() > 0){
+                if(!stackVertices.isEmpty()){
                     vert = stackVertices.pop();
                 } else {
                     executing = false;
@@ -99,24 +106,22 @@ public class Graph {
         Graph graph = new Graph();
         for (String element : textAr) {
             if(element.startsWith ("##")) {
-                if(element.startsWith(typeVertexStr)) type = typeVertexStr;
-                if(element.startsWith(typeEdgeStr)) type = typeEdgeStr;
-                continue;
-            }
-            if(element.startsWith("#")) {
+                if(element.startsWith(typeVertexStr)) {
+                    type = typeVertexStr;
+                } else if(element.startsWith(typeEdgeStr)) {
+                    type = typeEdgeStr;
+                }
+            } else if(element.startsWith("#")) {
                 titleLine = element;
-                continue;
-            }
-            if(!titleLine.isEmpty()) {
-                if(type == typeVertexStr) {
+            } else if(!titleLine.isEmpty()) {
+                if(type.equals(typeVertexStr)) {
                     Vertex vert = new Vertex();
                     vert.populate(titleLine, element);
-                    if(!vert.id.isEmpty()) graph.addVertex(vert);
-                }
-                if(type == typeEdgeStr) {
+                    graph.addVertex(vert);
+                } else if(type.equals(typeEdgeStr)) {
                     Edge edge = new Edge();
                     edge.populate(titleLine, element);
-                    if(!edge.id.isEmpty()) graph.addEdge(edge);
+                    graph.addEdge(edge);
                 }
             }
         }
