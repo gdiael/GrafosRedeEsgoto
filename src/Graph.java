@@ -1,6 +1,7 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 public class Graph {
 
@@ -68,8 +69,10 @@ public class Graph {
         stackVertices.push(vertices.get(0));
         while(!stackVertices.isEmpty()) {
             Vertex vert = stackVertices.pop();
-            vert.wasVisited = true;
-            System.out.println(vert);
+            if(!vert.wasVisited){
+                vert.wasVisited = true;
+                System.out.println(vert);
+            }
             for (Edge edge : vert.getAdjacentEdges()) {
                 if(!edge.wasVisited){
                     edge.wasVisited = true;
@@ -81,6 +84,30 @@ public class Graph {
                 }
             }
         }
+    }
+
+    public Graph toLineGraph() {
+        Graph lineGraph = new Graph();
+        Double dx = 1.0;
+        for (Edge edge : edges) {
+            Vertex vert = new Vertex(edge.id, dx, dx, dx, "edge");
+            dx += 1.0;
+            lineGraph.addVertex(vert);
+        }
+        for (Vertex vert : vertices) {
+            List<Edge> adj = vert.getAdjacentEdges();
+            for(int i = 0; i < adj.size() - 1; i++){
+                for(int j = i + 1; j < adj.size(); j++){
+                    Edge edgeA = adj.get(i);
+                    Edge edgeB = adj.get(j);
+                    String newId = String.format("%s-%s", edgeA.id, edgeB.id);
+                    Edge newEdge = new Edge(newId, edgeA.id, edgeB.id);
+                    newEdge.setWeight(edgeA.baseWeight() + edgeB.baseWeight());
+                    lineGraph.addEdge(newEdge);
+                }
+            }
+        }
+        return lineGraph;
     }
 
     public static Graph parseGraph(String text) {
@@ -112,6 +139,15 @@ public class Graph {
             }
         }
         return graph;
+    }
+
+    public void printGraph() {
+        for (Vertex vert : vertices) {
+            System.out.println(vert);
+            for (Edge edge : vert.getAdjacentEdges()) {
+                System.out.println(edge);
+            }
+        }
     }
 
     public String toString() {

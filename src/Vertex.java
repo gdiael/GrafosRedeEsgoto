@@ -26,6 +26,15 @@ public class Vertex {
         edges = new ArrayList<>();
     }
 
+    public Vertex(String id, Double posX, Double posY, Double elev, String desc){
+        edges = new ArrayList<>();
+        this.id = id;
+        this.posX = posX;
+        this.posY = posY;
+        this.elev = elev;
+        this.desc = desc;
+    }
+
     public List<Edge> getAdjacentEdges(){
         return edges;
     }

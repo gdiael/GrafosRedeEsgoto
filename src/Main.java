@@ -38,6 +38,6 @@ public class Main {
         } catch (Exception e) {
             logger.log(Level.SEVERE, String.format("Erro ao ler o arquivo: %s%n%s", fileName, e.toString()), e);
         }
-        if(graph != null) graph.depthSearch();
+        if(graph != null) graph.toLineGraph().depthSearch();
     }
 }

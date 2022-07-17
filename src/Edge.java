@@ -14,7 +14,25 @@ public class Edge {
 
     public boolean wasVisited = false;
 
+    private Double weight = 0.0;
+
     private static String[] doublePropName = {"profIni", "profFim", "dia", "vazao", "flow"};
+
+    public Double getWeight(){
+        return weight;
+    }
+
+    public void setWeight(Double val){
+        weight = val;
+    }
+
+    public Edge(){}
+
+    public Edge(String id, String vertIni, String vertFim){
+        this.id = id;
+        this.vertIdIni = vertIni;
+        this.vertIdFim = vertFim;
+    }
 
     // a elevação do tubo (altura do terreno - profundidade)
     // no caso de uma referência nula, vai usar como base a elevação padrão da classe (0.0)
