@@ -69,39 +69,49 @@ public class Graph {
         stackVertices.push(vertices.get(0));
         while(!stackVertices.isEmpty()) {
             Vertex vert = stackVertices.pop();
-            if(!vert.wasVisited){
-                vert.wasVisited = true;
-                System.out.println(vert);
-            }
+            vert.wasVisited = true;
+            System.out.println(vert);
+            
             for (Edge edge : vert.getAdjacentEdges()) {
                 if(!edge.wasVisited){
                     edge.wasVisited = true;
                     System.out.println(edge);
                 }
                 Vertex oposit = edge.getOpositVertex(vert);
-                if(!oposit.wasVisited){
+                if(!oposit.wasVisited && !stackVertices.contains(oposit)){
                     stackVertices.push(oposit);
                 }
             }
         }
     }
 
+
+    // cria um grafo de linha baseado no grafo atual, os pessos das novas arestas serão a soma dos pessos
+    // das vertices (arestas no grafo original) que são conectadas por elas
     public Graph toLineGraph() {
         Graph lineGraph = new Graph();
+        // dx será incrimentada para cada novo vertices, para prevenir que eles fiquem sobrepostos
         Double dx = 1.0;
         for (Edge edge : edges) {
+            // para cada aresta existente inseriremos um novo vertice no grafo de linha,
+            // ese vertíce casicamente terá ok id da aresta original
             Vertex vert = new Vertex(edge.id, dx, dx, dx, "edge");
             dx += 1.0;
             lineGraph.addVertex(vert);
         }
+
         for (Vertex vert : vertices) {
             List<Edge> adj = vert.getAdjacentEdges();
+            // vamos interagir por cada lista de arestas adjacentes a cada vertice
+            // fazendo os pares destas arestas para criar as novas arestas do grafo de linha
+            // caso o vertice esteja conectado a apenas uma aresta, não entra no laço
             for(int i = 0; i < adj.size() - 1; i++){
                 for(int j = i + 1; j < adj.size(); j++){
                     Edge edgeA = adj.get(i);
                     Edge edgeB = adj.get(j);
                     String newId = String.format("%s-%s", edgeA.id, edgeB.id);
                     Edge newEdge = new Edge(newId, edgeA.id, edgeB.id);
+                    // o peso da nova aresta será a soma dos pesos das arestas antigas
                     newEdge.setWeight(edgeA.baseWeight() + edgeB.baseWeight());
                     lineGraph.addEdge(newEdge);
                 }
