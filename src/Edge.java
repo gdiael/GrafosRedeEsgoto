@@ -3,8 +3,8 @@ public class Edge {
     public String id = "";
     public String vertIdIni = "";
     public String vertIdFim = "";
-    public Double profIni = 0.8; // profundidade em vertIni
-    public Double profFim = 0.8; // profundidade em vertFim
+    public Double profIni = Graph.PROF_MIN; // profundidade em vertIni
+    public Double profFim = Graph.PROF_MIN; // profundidade em vertFim
     public Double dia = 150.0; // diâmetro em milimetros
     public Double vazao = 1.5; // vazão de cada trecho em L/s
     public Double flow = 0.0; // direção do fluxo (positivo = ini -> fim, negativo = fim -> ini, zero = não calculado)
@@ -14,6 +14,8 @@ public class Edge {
 
     public boolean wasVisited = false;
 
+    // esse peso será usado no grafo de linha, para calcular o peso da nova aresta
+    // o peso real da aresta será dada pelo método baseWeight()
     private Double weight = 0.0;
 
     private static String[] doublePropName = {"profIni", "profFim", "dia", "vazao", "flow"};
@@ -66,8 +68,11 @@ public class Edge {
     // também são mais caras, pois potêncialmente tem mais escavação necessária para atingir a profundidade
     // ideial do tubo. Logo o peso (ou curto) de cada aresta vai ser dado por C*ElevMed, onde C é o comprimento
     public Double baseWeight() {
-        Double averageElev = (this.getElevIni() + this.getElevFim()) / 2.0;
-        return this.lenght() * averageElev;
+        
+        Double avgProf = (this.profIni + this.profIni) / 2.0;
+        Double excavSection = Graph.EXCAVATION_WIDTH_MIN * avgProf;
+
+        return this.lenght() * (Graph.PIPE_PRICE + Graph.EXCAVATION_PRICE * excavSection);
     }
 
     public void populate(String titleLine, String line) {

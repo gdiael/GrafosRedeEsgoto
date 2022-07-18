@@ -10,6 +10,15 @@ public class Graph {
 
     private ArrayList<Edge> edges;
 
+    // profundidade mínima, para cada trecho de tubulação
+    public static final Double PROF_MIN = 0.8;
+    // custo da tubulação por metro
+    public static final Double PIPE_PRICE = 120.0;
+    // custo da escavação do solo para execução do tubo por m3 de material escavado
+    public static final Double EXCAVATION_PRICE = 30.0;
+    // largura mínima da vala da tubulação
+    public static final Double EXCAVATION_WIDTH_MIN = 1.5;
+
     public Graph() {
         // inicia a lista de vertices
         vertices = new ArrayList<>();
@@ -49,7 +58,7 @@ public class Graph {
         return null;
     }
 
-    public boolean addEdge(Edge edge){
+    public boolean addEdge(Edge edge) {
         if(edge.id.isEmpty()) return false;
         Integer counter = 0;
         for (Vertex vert : vertices) {
@@ -64,13 +73,21 @@ public class Graph {
         return false;
     }
 
-    private void clearVisited(){
+    private void clearVisited() {
         for (Vertex vert : vertices) {
             vert.wasVisited = false;
         }
         for (Edge edge : edges) {
             edge.wasVisited = false;
         }
+    }
+
+    public Double totalWeight() {
+        Double weight = 0.0;
+        for (Edge edge : edges) {
+            weight += edge.baseWeight();
+        }
+        return weight;
     }
 
     public void depthSearch() {
@@ -94,7 +111,6 @@ public class Graph {
             }
         }
     }
-
 
     // cria um grafo de linha baseado no grafo atual, os pessos das novas arestas serão a soma dos pessos
     // das vertices (arestas no grafo original) que são conectadas por elas
@@ -158,6 +174,22 @@ public class Graph {
             vert = (minEdge.vertexIni.wasVisited ? minEdge.vertexFim : minEdge.vertexIni);
         } while(!minHeap.isEmpty());
         return minSpamTree;
+    }
+
+    public void updateGravityFlow(List<Vertex> minSpamTree) {
+        for (Vertex vert : minSpamTree) {
+            Edge edge = this.getEdge(vert.id);
+            System.out.println(String.format("%s - peso %.3f", edge.id, edge.baseWeight()));
+        }
+    }
+
+    public void calculateEdgeDirection() {
+        Double iniWeight = this.totalWeight();
+        System.out.println(String.format("Peso Ini: %.3f", iniWeight));
+        List<Vertex> minSpamTree = this.toLineGraph().findMinSpamTree();
+        updateGravityFlow(minSpamTree);
+        Double endWeight = this.totalWeight();
+        System.out.println(String.format("Peso Fim: %.3f", endWeight));
     }
 
     public static Graph parseGraph(String text) {
