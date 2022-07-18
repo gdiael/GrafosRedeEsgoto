@@ -2,6 +2,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -38,6 +39,12 @@ public class Main {
         } catch (Exception e) {
             logger.log(Level.SEVERE, String.format("Erro ao ler o arquivo: %s%n%s", fileName, e.toString()), e);
         }
-        if(graph != null) graph.toLineGraph().depthSearch();
+        if(graph != null) {
+            List<Vertex> minSpamTree = graph.toLineGraph().findMinSpamTree();
+            for (Vertex vert : minSpamTree) {
+                Edge edge = graph.getEdge(vert.id);
+                System.out.println(String.format("%s - peso %.3f", edge.id, edge.baseWeight()));
+            }
+        } 
     }
 }

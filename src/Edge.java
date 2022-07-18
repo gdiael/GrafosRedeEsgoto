@@ -44,7 +44,7 @@ public class Edge {
         return MyUtil.coalesce(vertexFim, new Vertex()).elev - this.profFim;
     }
 
-    public Vertex getOpositVertex(Vertex vert){
+    public Vertex getOpositVertex(Vertex vert) {
         if(vert == vertexIni) return vertexFim;
         if(vert == vertexFim) return vertexIni;
         return null;
@@ -61,6 +61,10 @@ public class Edge {
         return vertexIni.distance(vertexFim);
     }
 
+    // Aqui o peso de cada aresta, como as arestas representam tubulação, quanto maior o comprimento
+    // da tubulação, mas caro a execução daquele trecho. Além disso arestas com a elevação média maior,
+    // também são mais caras, pois potêncialmente tem mais escavação necessária para atingir a profundidade
+    // ideial do tubo. Logo o peso (ou curto) de cada aresta vai ser dado por C*ElevMed, onde C é o comprimento
     public Double baseWeight() {
         Double averageElev = (this.getElevIni() + this.getElevFim()) / 2.0;
         return this.lenght() * averageElev;

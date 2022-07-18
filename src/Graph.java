@@ -2,6 +2,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class Graph {
 
@@ -31,9 +32,18 @@ public class Graph {
 
     // retorna o vertice com identificador id, caso não exista retorna null
     public Vertex getVertex(String id) {
-        for (Vertex vert : vertices) {
+        for (Vertex vert : this.vertices) {
             if(vert.id.equals(id)){
                 return vert;
+            }
+        }
+        return null;
+    }
+
+    public Edge getEdge(String id) {
+        for (Edge edge : this.edges) {
+            if(edge.id.equals(id)){
+                return edge;
             }
         }
         return null;
@@ -118,6 +128,36 @@ public class Graph {
             }
         }
         return lineGraph;
+    }
+
+    public List<Vertex> findMinSpamTree() {
+        // a propriedade visited será usada para verificar se o vertíce já foi incluido
+        clearVisited();
+        // uma lista de prioridade que organizará as aresta por peso, da menor para a maior
+        PriorityQueue<Edge> minHeap = new PriorityQueue<>(
+            (Edge edgeA, Edge edgeB) -> Double.compare(edgeA.getWeight(), edgeB.getWeight()));
+        // vamos pegar o primeiro vertice, marcar como visitado e inserir as arestas adjacentes na lista
+        // de prioridade
+        Vertex vert = vertices.get(0);
+        ArrayList<Vertex> minSpamTree = new ArrayList<>(vertices.size());
+        do {
+            if(!vert.wasVisited) {
+                minSpamTree.add(vert);
+                vert.wasVisited = true;
+                for (Edge edge : vert.getAdjacentEdges()) {
+                    if(!edge.wasVisited) {
+                        edge.wasVisited = true;
+                        minHeap.add(edge);
+                    }
+                }
+            }
+            
+            Edge minEdge = minHeap.poll();
+            // como iremos inserir apenas arestas de vertices visitados, pelo menos uma das pontas
+            // ainda não foi visitada
+            vert = (minEdge.vertexIni.wasVisited ? minEdge.vertexFim : minEdge.vertexIni);
+        } while(!minHeap.isEmpty());
+        return minSpamTree;
     }
 
     public static Graph parseGraph(String text) {
