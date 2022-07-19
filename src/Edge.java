@@ -5,8 +5,6 @@ public class Edge {
     public String vertIdFim = "";
     public Double profIni = Graph.PROF_MIN; // profundidade em vertIni
     public Double profFim = Graph.PROF_MIN; // profundidade em vertFim
-    public Double dia = 150.0; // diâmetro em milimetros
-    public Double vazao = 1.5; // vazão de cada trecho em L/s
     public Double flow = 0.0; // direção do fluxo (positivo = ini -> fim, negativo = fim -> ini, zero = não calculado)
 
     public Vertex vertexIni;
@@ -18,7 +16,7 @@ public class Edge {
     // o peso real da aresta será dada pelo método baseWeight()
     private Double weight = 0.0;
 
-    private static String[] doublePropName = {"profIni", "profFim", "dia", "vazao", "flow"};
+    private static String[] doublePropName = {"profIni", "profFim", "flow"};
 
     public Double getWeight(){
         return weight;
@@ -96,10 +94,6 @@ public class Edge {
                             profIni = valDbl; break;
                         case "profFim":
                             profFim = valDbl; break;
-                        case "dia":
-                            dia = valDbl; break;
-                        case "vazao":
-                            vazao = valDbl; break;
                         case "flow":
                             flow = valDbl; break;
                         default:
@@ -111,6 +105,6 @@ public class Edge {
     }
 
     public String toString() {
-        return String.format("%s;%s;%s;%.3f;%.3f;%.1f;%.3f;%.1f;", id, vertIdIni, vertIdFim, profIni, profFim, dia, vazao, this.baseWeight());
+        return String.format("%s;%s;%s;%.3f;%.3f;%.1f;", id, vertIdIni, vertIdFim, profIni, profFim, flow);
     }
 }

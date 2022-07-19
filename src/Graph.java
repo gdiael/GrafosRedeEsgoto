@@ -112,6 +112,17 @@ public class Graph {
         }
     }
 
+    private Vertex  findLowestVert() {
+        Vertex vert = this.vertices.get(0);
+        for(int i = 1; i < this.vertices.size(); i++) {
+            Vertex otherVert = this.vertices.get(i);
+            if(otherVert.elev < vert.elev) {
+                vert = otherVert;
+            }
+        }
+        return vert;
+    }
+
     // cria um grafo de linha baseado no grafo atual, os pessos das novas arestas serão a soma dos pessos
     // das vertices (arestas no grafo original) que são conectadas por elas
     public Graph toLineGraph() {
@@ -146,7 +157,7 @@ public class Graph {
         return lineGraph;
     }
 
-    public List<Vertex> findMinSpamTree() {
+    public List<Edge> findMinSpamTree() {
         // a propriedade visited será usada para verificar se o vertíce já foi incluido
         clearVisited();
         // uma lista de prioridade que organizará as aresta por peso, da menor para a maior
@@ -155,10 +166,9 @@ public class Graph {
         // vamos pegar o primeiro vertice, marcar como visitado e inserir as arestas adjacentes na lista
         // de prioridade
         Vertex vert = vertices.get(0);
-        ArrayList<Vertex> minSpamTree = new ArrayList<>(vertices.size());
+        ArrayList<Edge> minSpamTree = new ArrayList<>(edges.size());
         do {
             if(!vert.wasVisited) {
-                minSpamTree.add(vert);
                 vert.wasVisited = true;
                 for (Edge edge : vert.getAdjacentEdges()) {
                     if(!edge.wasVisited) {
@@ -172,21 +182,52 @@ public class Graph {
             // como iremos inserir apenas arestas de vertices visitados, pelo menos uma das pontas
             // ainda não foi visitada
             vert = (minEdge.vertexIni.wasVisited ? minEdge.vertexFim : minEdge.vertexIni);
+            if(!vert.wasVisited) {
+                minSpamTree.add(minEdge);
+            }
         } while(!minHeap.isEmpty());
         return minSpamTree;
     }
 
-    public void updateGravityFlow(List<Vertex> minSpamTree) {
-        for (Vertex vert : minSpamTree) {
-            Edge edge = this.getEdge(vert.id);
-            System.out.println(String.format("%s - peso %.3f", edge.id, edge.baseWeight()));
+    public void updateGravityFlow(List<Edge> minSpamTree) {
+        // será computada a direção do fluxo (flow) de cada aresta
+        // -1.0 para inverter e 1.0 para manter
+        // para isso iremos percorer a arvore em uma busca em largura a partir do vertice com
+        // a menor elevação, pelos caminhos da minSpamTree do grafo de linha, onde o id dos vertices
+        // de cada aresta são os ids das nossas arestas
+
+        clearVisited();
+        
+        Vertex vert = findLowestVert();
+        
+        Deque<Vertex> stackVertices = new ArrayDeque<>();
+        stackVertices.add(vert);
+        while(!stackVertices.isEmpty()) {
+            vert = stackVertices.pop();
+            vert.wasVisited = true;
+            System.out.println(vert);
+            
+            for (Edge edge : vert.getAdjacentEdges()) {
+                if(!edge.wasVisited){
+                    edge.wasVisited = true;
+                    System.out.println(edge);
+                }
+                Vertex oposit = edge.getOpositVertex(vert);
+                if(!oposit.wasVisited && !stackVertices.contains(oposit)){
+                    stackVertices.add(oposit);
+                }
+            }
+        }
+
+        for (Edge edge : minSpamTree) {
+            System.out.println(String.format("%s - peso %.3f", edge.id, edge.getWeight()));
         }
     }
 
     public void calculateEdgeDirection() {
         Double iniWeight = this.totalWeight();
         System.out.println(String.format("Peso Ini: %.3f", iniWeight));
-        List<Vertex> minSpamTree = this.toLineGraph().findMinSpamTree();
+        List<Edge> minSpamTree = this.toLineGraph().findMinSpamTree();
         updateGravityFlow(minSpamTree);
         Double endWeight = this.totalWeight();
         System.out.println(String.format("Peso Fim: %.3f", endWeight));
