@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.logging.Level;
 
 public class Graph {
 
@@ -97,12 +98,12 @@ public class Graph {
         while(!stackVertices.isEmpty()) {
             Vertex vert = stackVertices.pop();
             vert.wasVisited = true;
-            System.out.println(vert);
+            MyUtil.printMsg(vert.toString(), Level.INFO, false);
             
             for (Edge edge : vert.getAdjacentEdges()) {
                 if(!edge.wasVisited){
                     edge.wasVisited = true;
-                    System.out.println(edge);
+                    MyUtil.printMsg(edge.toString(), Level.INFO, false);
                 }
                 Vertex oposit = edge.getOpositVertex(vert);
                 if(!oposit.wasVisited && !stackVertices.contains(oposit)){
@@ -205,12 +206,12 @@ public class Graph {
         while(!stackVertices.isEmpty()) {
             vert = stackVertices.pop();
             vert.wasVisited = true;
-            System.out.println(vert);
+            MyUtil.printMsg(vert.toString(), Level.INFO, false);
             
             for (Edge edge : vert.getAdjacentEdges()) {
                 if(!edge.wasVisited){
                     edge.wasVisited = true;
-                    System.out.println(edge);
+                    MyUtil.printMsg(edge.toString(), Level.INFO, false);
                 }
                 Vertex oposit = edge.getOpositVertex(vert);
                 if(!oposit.wasVisited && !stackVertices.contains(oposit)){
@@ -220,17 +221,17 @@ public class Graph {
         }
 
         for (Edge edge : minSpamTree) {
-            System.out.println(String.format("%s - peso %.3f", edge.id, edge.getWeight()));
+            MyUtil.printMsg(String.format("%s - peso %.3f", edge.id, edge.getWeight()), Level.INFO, false);
         }
     }
 
     public void calculateEdgeDirection() {
         Double iniWeight = this.totalWeight();
-        System.out.println(String.format("Peso Ini: %.3f", iniWeight));
+        MyUtil.printMsg(String.format("Peso Ini: %.3f", iniWeight), Level.INFO, false);
         List<Edge> minSpamTree = this.toLineGraph().findMinSpamTree();
         updateGravityFlow(minSpamTree);
         Double endWeight = this.totalWeight();
-        System.out.println(String.format("Peso Fim: %.3f", endWeight));
+        MyUtil.printMsg(String.format("Peso Fim: %.3f", endWeight), Level.INFO, false);
     }
 
     public static Graph parseGraph(String text) {
@@ -266,9 +267,9 @@ public class Graph {
 
     public void printGraph() {
         for (Vertex vert : vertices) {
-            System.out.println(vert);
+            MyUtil.printMsg(vert.toString(), Level.INFO, false);
             for (Edge edge : vert.getAdjacentEdges()) {
-                System.out.println(edge);
+                MyUtil.printMsg(edge.toString(), Level.INFO, false);
             }
         }
     }
