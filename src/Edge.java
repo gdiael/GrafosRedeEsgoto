@@ -26,6 +26,20 @@ public class Edge {
         weight = val;
     }
 
+    // vertice inicial do fluxo
+    public Vertex inVertex() {
+        return this.isReverse() ? this.vertexFim : this.vertexIni;
+    }
+
+    // vertice final do fluxo
+    public Vertex outVertex() {
+        return this.isReverse() ? this.vertexIni : this.vertexFim;
+    }
+
+    public boolean isReverse() {
+        return this.flow < 0.0;
+    }
+
     public Edge(){}
 
     public Edge(String id, String vertIni, String vertFim){
@@ -48,6 +62,39 @@ public class Edge {
         if(vert == vertexIni) return vertexFim;
         if(vert == vertexFim) return vertexIni;
         return null;
+    }
+
+    public void updateSlope() {
+        // atualizaremos de volta a profundidade para a profundidade mínima
+        this.profIni = Graph.PROF_MIN;
+        this.profFim = Graph.PROF_MIN;
+        // pegaremos os vertíces na ordem correta do fluxo
+        Vertex vertIn = this.inVertex();
+        Vertex vertOut = this.outVertex();
+
+        Double len = this.lenght();
+        // aqui pegaremos a profundidade máxima das arestas que chegam no vertice inicial
+        Double profIn = vertIn.profMax();
+
+        Double profOut = Graph.PROF_MIN;
+        // aqui pegaremos a profundidade máxima do vertice inicial
+        Double elevIn = vertIn.elev - profIn;
+        Double elevOut = vertOut.elev - profOut;
+
+        Double slope = (elevIn - elevOut) / len;
+        slope = Math.max(slope, Graph.MINIMUM_SLOPE);
+        Double dy = slope * len;
+
+        elevOut = elevIn - dy;
+        profOut = vertOut.elev - elevOut;
+
+        if(this.isReverse()) {
+            this.profFim = profIn;
+            this.profIni = profOut;
+        } else {
+            this.profIni = profIn;
+            this.profFim = profOut;
+        }
     }
 
     private static boolean isDblPropertyName(String prop) {

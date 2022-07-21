@@ -11,14 +11,16 @@ public class Graph {
 
     private ArrayList<Edge> edges;
 
-    // profundidade mínima, para cada trecho de tubulação
-    public static final Double PROF_MIN = 0.8;
-    // custo da tubulação por metro
+    // profundidade mínima, para cada trecho de tubulação (unidade: m)
+    public static final Double PROF_MIN = 0.9;
+    // custo da tubulação (unidade: R$/m)
     public static final Double PIPE_PRICE = 120.0;
-    // custo da escavação do solo para execução do tubo por m3 de material escavado
+    // custo da escavação do solo para execução da tubuçação (unidade R$/m3)
     public static final Double EXCAVATION_PRICE = 30.0;
-    // largura mínima da vala da tubulação
+    // largura mínima da vala da tubulação (unidade: m)
     public static final Double EXCAVATION_WIDTH_MIN = 1.5;
+    // declividade mínima entre as duas pontas das arestas (unidade: m/m)
+    public static final double MINIMUM_SLOPE = 0.015;
 
     public Graph() {
         // inicia a lista de vertices
@@ -197,41 +199,77 @@ public class Graph {
         // a menor elevação, pelos caminhos da minSpamTree do grafo de linha, onde o id dos vertices
         // de cada aresta são os ids das nossas arestas
 
+        // limpanos o wasVisited dos vertices e arestas
         clearVisited();
-        
+
+        // vamos iniciar pelo vertice com a menor elevação
         Vertex vert = findLowestVert();
-        
-        Deque<Vertex> stackVertices = new ArrayDeque<>();
-        stackVertices.add(vert);
-        while(!stackVertices.isEmpty()) {
-            vert = stackVertices.pop();
-            vert.wasVisited = true;
-            MyUtil.printMsg(vert.toString(), Level.INFO, false);
-            
-            for (Edge edge : vert.getAdjacentEdges()) {
-                if(!edge.wasVisited){
-                    edge.wasVisited = true;
-                    MyUtil.printMsg(edge.toString(), Level.INFO, false);
-                }
-                Vertex oposit = edge.getOpositVertex(vert);
-                if(!oposit.wasVisited && !stackVertices.contains(oposit)){
-                    stackVertices.add(oposit);
-                }
-            }
+        // esse vertice já foi visitado
+        vert.wasVisited = true;
+        // uma pilha para guardar as arestas que serão percorridas
+        Deque<Edge> stackEdges = new ArrayDeque<>();
+        // começaremos a percorrer pelas arestas que terminam em vert
+        for (Edge edge : vert.getAdjacentEdges()) {
+            // como elas teminam em vert o fluxo deve direcionar para vert
+            edge.flow = edge.vertexFim == vert ? 1.0 : -1.0;
+            // elas seram consideradas visitadas
+            edge.wasVisited = true;
+            // e entraram na pilha
+            stackEdges.add(edge);
         }
 
-        for (Edge edge : minSpamTree) {
-            MyUtil.printMsg(String.format("%s - peso %.3f", edge.id, edge.getWeight()), Level.INFO, false);
+        // aqui iremos percorrer as arestas que estão na pilha
+        while(!stackEdges.isEmpty()) {
+            // verificamos a aresta no topo da pilha
+            Edge edge = stackEdges.peek();
+            boolean isLeaf = true;
+            // vamos verificar se tem arestas filhas na arvore geradora mínima a serem percorridas
+            for (Edge edgeMST : minSpamTree) {
+                if(!edgeMST.wasVisited && (edgeMST.vertIdIni.equals(edge.id) || edgeMST.vertIdFim.equals(edge.id))) {
+                    isLeaf = false;
+                    edgeMST.wasVisited = true;
+                }
+            }
+            if(isLeaf) {
+                // caso não 
+                // atualizamos sua declividade
+                edge.updateSlope();
+                stackEdges.removeFirst();
+                MyUtil.printMsg(edge.toString(), Level.INFO, false);
+
+            } else {
+                Vertex next = edge.vertexIni.wasVisited ? edge.vertexFim : edge.vertexIni;
+                next.wasVisited = true;
+                for (Edge edge2 : next.getAdjacentEdges()) {
+                    if(!edge2.wasVisited) {
+                        // como elas teminam em vert o fluxo deve direcionar para vert
+                        edge2.flow = edge2.vertexFim == next ? 1.0 : -1.0;
+                        // elas seram consideradas visitadas
+                        edge2.wasVisited = true;
+                        // e entrar am na pilha
+                        stackEdges.push(edge2);
+                    }
+                }
+            }
         }
     }
 
     public void calculateEdgeDirection() {
-        Double iniWeight = this.totalWeight();
-        MyUtil.printMsg(String.format("Peso Ini: %.3f", iniWeight), Level.INFO, false);
-        List<Edge> minSpamTree = this.toLineGraph().findMinSpamTree();
-        updateGravityFlow(minSpamTree);
-        Double endWeight = this.totalWeight();
-        MyUtil.printMsg(String.format("Peso Fim: %.3f", endWeight), Level.INFO, false);
+        Double iniWeight;
+        Double endWeight;
+        Integer count = 0;
+        do {
+            iniWeight = this.totalWeight();
+            MyUtil.printMsg(String.format("Peso Ini: %.3f", iniWeight), Level.INFO, false);
+            List<Edge> minSpamTree = this.toLineGraph().findMinSpamTree();
+            for (Edge edge : minSpamTree) {
+                edge.wasVisited = false;
+            }
+            updateGravityFlow(minSpamTree);
+            endWeight = this.totalWeight();
+            count++;
+            MyUtil.printMsg(String.format("Peso Fim: %.3f", endWeight), Level.INFO, false);
+        } while((Math.abs(iniWeight - endWeight) > 0.50) && (count < 10));
     }
 
     public static Graph parseGraph(String text) {

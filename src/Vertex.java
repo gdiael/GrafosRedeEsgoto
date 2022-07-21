@@ -39,6 +39,18 @@ public class Vertex {
         return edges;
     }
 
+    public Double profMax() {
+        Double profMax = Double.MIN_VALUE;
+        for (Edge edge : edges) {
+            if(edge.vertexIni == this) {
+                profMax = Math.max(edge.profIni, profMax);
+            } else {
+                profMax = Math.max(edge.profFim, profMax);
+            }
+        }
+        return profMax;
+    }
+
     private static boolean isDblPropertyName(String prop) {
         for (String dblProp : doublePropName) {
             if(prop.equals(dblProp)) return true;
